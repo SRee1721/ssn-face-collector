@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSN Face Collector - Login</title>
+    <style>
+      /* your existing styles remain unchanged */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        background: #f4f6f9;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      header img {
+        width: 100px;
+        height: auto;
+        margin-bottom: 10px;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 26px;
+        color: #0a3d62;
+      }
+
+      form {
+        background: white;
+        padding: 20px 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 400px;
+      }
+
+      form label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+      }
+
+      form input,
+      form select,
+      form button {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      form button {
+        background-color: #0a3d62;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      form button:hover {
+        background-color: #1e6091;
+      }
+
+      footer {
+        margin-top: 30px;
+        font-size: 14px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img
+        src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FSri_Sivasubramaniya_Nadar_College_of_Engineering&psig=AOvVaw1P3yuQ965k_Hih69dfkPU_&ust=1745451336542000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCOjGm4vn7IwDFQAAAAAdAAAAABAQ"
+        alt="SSN College Logo"
+      />
+      <h1>SSN Face Collector - Login</h1>
+    </header>
+
+    <form id="loginForm" action="/login" method="POST">
+      <label for="email">SSN Email:</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        placeholder="you@ssn.edu.in"
+        pattern=".+@(ssn|snu)\.edu\.in"
+        title="Must be an SSN email"
+      />
+
+      <label for="password">Password:</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+        placeholder="Enter your password"
+      />
+
+      <button type="submit">Login</button>
+    </form>
+
+    <footer>
+      &copy; 2025 SSN College of Engineering. All rights reserved.
+    </footer>
+  </body>
+</html>
