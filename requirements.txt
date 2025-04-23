@@ -1,0 +1,10 @@
+flask
+flask-cors
+firebase-admin
+opencv-python
+insightface
+numpy
+onnxruntime
+scikit-image
+scipy
+gunicorn
