@@ -7,10 +7,11 @@ from PIL import Image
 from io import BytesIO
 import cv2
 from insightface.app import FaceAnalysis
+import os
 
 app = Flask(__name__)
-app.secret_key = 'super-secret-key'
-cred = credentials.Certificate("ServiceAccountKey.json")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+cred = credentials.Certificate('/etc/secrets/ServiceAccountKey.json')
 firebase_admin.initialize_app(cred)
 store = firestore.client()
 COLLECTION_NAME = "academy:register"
