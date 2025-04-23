@@ -5,6 +5,7 @@ from firebase_admin import credentials, firestore
 import numpy as np
 from PIL import Image
 from io import BytesIO
+from flask_cors import CORS
 import cv2
 from insightface.app import FaceAnalysis
 import os
