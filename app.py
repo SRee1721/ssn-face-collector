@@ -10,6 +10,7 @@ from insightface.app import FaceAnalysis
 import os
 
 app = Flask(__name__)
+CORS(app) 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 cred = credentials.Certificate('/etc/secrets/ServiceAccountKey.json')
 firebase_admin.initialize_app(cred)
