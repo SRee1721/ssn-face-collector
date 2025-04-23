@@ -14,6 +14,7 @@ app = Flask(__name__)
 CORS(app) 
 app.secret_key = os.environ.get("FLASK_SECRET_KEY")
 cred = credentials.Certificate('/etc/secrets/ServiceAccountKey.json')
+app.config['SESSION_COOKIE_SECURE'] = True
 firebase_admin.initialize_app(cred)
 store = firestore.client()
 COLLECTION_NAME = "academy:register"
