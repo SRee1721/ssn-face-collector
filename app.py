@@ -218,7 +218,7 @@ CORS(app)
 
 # Set secret key securely
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", secrets.token_hex(32))
-cred = credentials.Certificate('./ServiceAccountKey.json')
+cred = credentials.Certificate('/etc/secrets/serviceAccountKey.json')
 firebase_admin.initialize_app(cred)
 store = firestore.client()
 COLLECTION_NAME = "academy:register"
@@ -416,7 +416,7 @@ def upload_frame():
 
 @app.route('/firebase-config')
 def firebase_config():
-    with open('google-services.json') as f:
+    with open('/etc/secrets/google-services.json') as f:
         config = json.load(f)
     # Optionally, remove sensitive fields if needed
     return jsonify(config)
