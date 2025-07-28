@@ -8,4 +8,4 @@ onnxruntime
 scikit-image
 scipy
 gunicorn
-pyrebase
+pyrebase4
