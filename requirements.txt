@@ -9,3 +9,4 @@ scikit-image
 scipy
 gunicorn
 pyrebase4
+setuptools
