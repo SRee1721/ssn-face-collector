@@ -647,8 +647,10 @@
         });
     </script>
 
-    <script src="/static/script.js"></script>
-    <script src="/static/index.js"></script>
+<!--     <script src="/static/script.js"></script> -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+<!--     <script src="/static/index.js"></script> -->
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
   </body>
 </html>
 
