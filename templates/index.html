@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -255,6 +255,404 @@
             });
         }
       });
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSN Face Collector</title>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <!-- CSS -->
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
+      }
+
+      header {
+        background: white;
+        padding: 15px 30px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header img {
+        height: 50px;
+      }
+
+      header .user-info {
+        font-size: 0.95rem;
+        color: #0a3d62;
+      }
+
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1100px;
+        margin: 30px auto;
+        gap: 20px;
+        padding: 0 20px;
+      }
+
+      .left-section,
+      .right-section {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        flex: 1 1 450px;
+      }
+
+      h2 {
+        margin-top: 0;
+        font-size: 1.6rem;
+        color: #0a3d62;
+      }
+
+      form label {
+        display: block;
+        margin: 12px 0 6px;
+        font-weight: 600;
+      }
+
+      form input,
+      form select,
+      form textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-bottom: 10px;
+      }
+
+      form button {
+        background-color: #0a3d62;
+        color: white;
+        border: none;
+        padding: 12px;
+        font-size: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      form button:hover {
+        background-color: #154a8a;
+      }
+
+      video {
+        display: none;
+        margin-top: 20px;
+        border: 2px solid #0a3d62;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      footer {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #888;
+        margin: 30px 0;
+      }
+
+      #sampleCounter {
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-top: 15px;
+      }
+      #instructionOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        display: none;
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        font-size: 1.4rem;
+        padding: 20px;
+        text-align: center;
+      }
+
+      #faceAnimation {
+        width: 250px;
+        height: 250px;
+        margin: 20px 0;
+        background-size: cover;
+        background-position: center;
+        border-radius: 50%;
+        border: 4px solid white;
+        animation: pulse 1.2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.05);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+      }
+
+      #stepText {
+        margin-top: 10px;
+        font-size: 1.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="./static/media/image.png" alt="SSN Logo" />
+      <!-- <div class="user-info">srinivas2210575@ssn.edu.in &middot; Student</div>-->
+    </header>
+
+    <div class="container">
+      <div class="left-section">
+        <h2>Register Your Face Data</h2>
+        <p>
+          Please fill in the form below to start face collection for bus
+          attendance in future.
+        </p>
+        <p style="font-size: 0.95rem; color: #666">
+          All data will be treated confidentially and securely.
+        </p>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+          "
+        >
+          <!--<div
+            style="
+              width: 50px;
+              height: 50px;
+              background: #ddd;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: bold;
+              color: #444;
+            "
+          >
+            SS
+          </div>-->
+          <!--
+          <div>
+            <div style="font-weight: 600">Srinivas S</div>
+            <div style="color: #666">srinivas2210575@ssn.edu.in</div>
+          </div>
+        --></div>
+      </div>
+
+      <div class="right-section">
+        <form id="infoForm">
+          <label for="name">Name</label>
+          <input type="text" id="name" required />
+
+          <label for="email">SSN Email</label>
+          <input
+            type="email"
+            id="email"
+            required
+            placeholder="you@ssn.edu.in"
+            pattern=".+@(ssn|snu)\.edu\.in"
+            title="Must be an SSN email"
+          />
+
+          <label for="dob">Date of Birth</label>
+          <input type="date" id="dob" name="dob" required max="2020-12-31" />
+
+          <label for="role">Role</label>
+          <select id="role" required>
+            <option value="STUDENT">Student</option>
+            <option value="TEACHER">Teacher</option>
+          </select>
+
+          <label for="busStop">Bus Stop</label>
+          <select id="busStop" required>
+            <option value="">Loading stops...</option>
+          </select>
+
+          <div id="sampleCounter" style="display: none">
+            Samples Collected: <span id="sampleCount">0</span>
+          </div>
+
+          <button type="submit">Start Face Collection</button>
+        </form>
+
+        <video id="video" width="640" height="480" autoplay></video>
+      </div>
+    </div>
+    <div id="instructionOverlay">
+      <div
+        id="faceAnimation"
+        style="background-image: url('/static/media/face-default.png')"
+      ></div>
+      <div id="stepText">Step 1: Look straight at the camera</div>
+    </div>
+
+    <footer>
+      &copy; 2025 SSN College of Engineering. All rights reserved.
+    </footer>
+    <script>
+      /*const overlay = document.getElementById("instructionOverlay");
+          const stepText = document.getElementById("stepText");
+          const faceAnimation = document.getElementById("faceAnimation");
+
+          const instructions = [
+            "Step 1: Look straight at the camera",
+            "Step 2: Tilt your head slightly down",
+            "Step 3: Turn your face to the left",
+            "Step 4: Turn your face to the right",
+            "Step 5: Cover the left side of your face",
+            "Step 6: Cover the right side of your face",
+            "Step 7: Cover your mouth",
+            "Step 8: Wear glasses or a mask if available",
+          ];
+
+          const animationImages = [
+            "face-front.png",
+            "face-down.png",
+            "face-left.png",
+            "face-right.png",
+            "face-half-left.png",
+            "face-half-right.png",
+            "face-mouth.png",
+            "face-mask.png",
+          ];
+
+          function showInstructions() {
+            overlay.style.display = "flex";
+            let currentStep = 0;
+
+            function nextStep() {
+              if (currentStep < instructions.length) {
+                stepText.textContent = instructions[currentStep];
+                faceAnimation.style.backgroundImage = `url('/static/media/${animationImages[currentStep]}')`;
+                currentStep++;
+                setTimeout(nextStep, 2500); // Wait 2.5s before next step
+              } else {
+                overlay.style.display = "none";
+              }
+            }
+
+            nextStep();
+          }
+          document
+            .getElementById("infoForm")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+
+              showInstructions(); // 🔥 Call the overlay here
+
+              // Start your face collection logic here
+            });*/
+
+      const overlay = document.getElementById("instructionOverlay");
+      const stepText = document.getElementById("stepText");
+      const faceAnimation = document.getElementById("faceAnimation");
+
+      const instructions = [
+        "Step 1: Look straight at the camera",
+        "Step 2: Tilt your head slightly down",
+        "Step 3: Turn your face to the left",
+        "Step 4: Turn your face to the right",
+        "Step 5: Cover the left side of your face",
+        "Step 6: Cover the right side of your face",
+        "Step 7: Cover your mouth",
+        "Step 8: Wear glasses or a mask if available",
+      ];
+
+      const animationImages = [
+        "face-front.png",
+        "face-down.png",
+        "face-left.png",
+        "face-right.png",
+        "face-half-left.png",
+        "face-half-right.png",
+        "face-mouth.png",
+        "face-mask.png",
+      ];
+
+      function showInstructions() {
+        overlay.style.display = "flex";
+        let currentStep = 0;
+
+        function nextStep() {
+          if (currentStep < instructions.length) {
+            stepText.textContent = instructions[currentStep];
+            faceAnimation.style.backgroundImage = `url('/static/media/${animationImages[currentStep]}')`;
+            currentStep++;
+            setTimeout(nextStep, 2500); // Wait 2.5s before next step
+          } else {
+            overlay.style.display = "none";
+          }
+        }
+
+        nextStep();
+      }
+
+      document
+        .getElementById("infoForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // 🔥 Request camera access first
+          navigator.mediaDevices
+            .getUserMedia({ video: true })
+            .then((stream) => {
+              // Camera access granted, you can now show instructions
+              showInstructions();
+
+              // Optional: attach the stream to a video element if needed
+              // document.getElementById("videoPreview").srcObject = stream;
+
+              // 🔥 Start your face collection logic here
+            })
+            .catch((err) => {
+              alert("Camera access is required to proceed.");
+              console.error("Camera error:", err);
+            });
+        });
+    </script>
+
+    <script src="/static/script.js"></script>
+    <script src="/static/index.js"></script>
+  </body>
+</html>
+
     </script>
   </body>
 </html>
+ -->
