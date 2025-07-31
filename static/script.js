@@ -151,25 +151,53 @@ function runMainApp(firebaseConfig) {
   const db = firebase.firestore();
 
   const busStopSelect = document.getElementById("busStop");
-
+  const busNoSelect=document.getElementById("busNo");
   db.collection("default_routes")
-    .get()
-    .then((querySnapshot) => {
-      const stopsSet = new Set();
-      querySnapshot.forEach((doc) => {
-        const stops = doc.data().stops || [];
-        stops.forEach((stop) => stopsSet.add(stop));
-      });
-      busStopSelect.innerHTML = '<option value="">Select your stop</option>';
-      Array.from(stopsSet)
-        .sort()
-        .forEach((stop) => {
-          const option = document.createElement("option");
-          option.value = stop;
-          option.textContent = stop;
-          busStopSelect.appendChild(option);
-        });
+  .get()
+  .then((querySnapshot) => {
+    const stopsSet = new Set();
+    querySnapshot.forEach((doc) => {
+      const stops = doc.data().stops || [];
+      stops.forEach((stop) => stopsSet.add(stop));
     });
+
+    busStopSelect.innerHTML = '<option value="">Select your stop</option>';
+    Array.from(stopsSet)
+      .sort()
+      .forEach((stop) => {
+        const option = document.createElement("option");
+        option.value = stop;
+        option.textContent = stop;
+        busStopSelect.appendChild(option);
+      });
+  })
+  .catch((error) => {
+    console.error("Error loading bus stops:", error);
+  });
+
+
+db.collection("buses")
+  .get()
+  .then((querySnapshot) => {
+    const busNumber = [];
+    querySnapshot.forEach((doc) => {
+      busNumber.push(doc.id);
+    });
+
+    busNoSelect.innerHTML = '<option value="">Select your bus number</option>';
+    Array.from(busNumber)
+      .sort()
+      .forEach((id) => {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = id;
+        busNoSelect.appendChild(option);
+      });
+  })
+  .catch((error) => {
+    console.error("Error loading bus numbers:", error);
+  });
+
 
   const form = document.getElementById("infoForm");
   const video = document.getElementById("video");
