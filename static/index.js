@@ -1,10 +1,7 @@
 fetch("/firebase-config")
   .then((response) => response.json())
   .then((firebaseConfig) => {
-    // Use compat version for compatibility with existing code
-    // if (!firebase.apps.length) {
-    //   firebase.initializeApp(firebaseConfig);
-    // }
+    
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     db.ref("site_status/enabled").on("value", (snapshot) => {
@@ -19,3 +16,4 @@ fetch("/firebase-config")
       }
     });
   });
+
