@@ -12,10 +12,6 @@
 
     <!-- CSS -->
     <style>
-      * {
-        box-sizing: border-box;
-      }
-
       body {
         margin: 0;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -34,11 +30,6 @@
 
       header img {
         height: 50px;
-      }
-
-      header .user-info {
-        font-size: 0.95rem;
-        color: #0a3d62;
       }
 
       .container {
@@ -72,8 +63,7 @@
       }
 
       form input,
-      form select,
-      form textarea {
+      form select {
         width: 100%;
         padding: 12px;
         border: 1px solid #ccc;
@@ -98,15 +88,6 @@
         background-color: #154a8a;
       }
 
-      video {
-        display: none;
-        margin-top: 20px;
-        border: 2px solid #0a3d62;
-        border-radius: 10px;
-        width: 100%;
-        max-width: 600px;
-      }
-
       footer {
         text-align: center;
         font-size: 0.85rem;
@@ -114,39 +95,54 @@
         margin: 30px 0;
       }
 
-      #sampleCounter {
-        text-align: center;
-        font-weight: bold;
-        font-size: 1.1rem;
-        margin-top: 15px;
-      }
-      #instructionOverlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
+      /* Overlay container */
+      #collectionOverlay {
         display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.95);
         z-index: 9999;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+      }
+
+      #collectionOverlay video {
+        width: 640px;
+        height: 480px;
+        background: black;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        border: 3px solid #0a3d62;
+      }
+
+      #instructionOverlay {
+        display: flex;
         flex-direction: column;
-        color: white;
-        font-size: 1.4rem;
-        padding: 20px;
-        text-align: center;
+        align-items: center;
       }
 
       #faceAnimation {
-        width: 250px;
-        height: 250px;
-        margin: 20px 0;
+        width: 150px;
+        height: 150px;
+        margin: 10px 0;
         background-size: cover;
         background-position: center;
         border-radius: 50%;
-        border: 4px solid white;
+        border: 3px solid #0a3d62;
         animation: pulse 1.2s infinite;
+      }
+
+      #stepText {
+        margin-top: 10px;
+        font-size: 1.2rem;
+        text-align: center;
+      }
+
+      #sampleCounter {
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 1.1rem;
       }
 
       @keyframes pulse {
@@ -163,17 +159,11 @@
           opacity: 0.8;
         }
       }
-
-      #stepText {
-        margin-top: 10px;
-        font-size: 1.2rem;
-      }
     </style>
   </head>
   <body>
     <header>
       <img src="./static/media/image.png" alt="SSN Logo" />
-      
     </header>
 
     <div class="container">
@@ -186,16 +176,6 @@
         <p style="font-size: 0.95rem; color: #666">
           All data will be treated confidentially and securely.
         </p>
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-          "
-        >
-          
-        </div>
       </div>
 
       <div class="right-section">
@@ -218,114 +198,69 @@
 
           <label for="role">Role</label>
           <select id="role" required>
-            <option value="STUDENT">Student</option>
+            <option value="DayScholar_Student">DayScholar_Student</option>
+            <option value="Hosteller_Student">Hosteller_Student</option>
             <option value="TEACHER">Teacher</option>
           </select>
+
           <label for="busNo">Bus Number</label>
           <select id="busNo" required>
             <option value="">Loading bus number....</option>
           </select>
+
           <label for="busStop">Bus Stop</label>
           <select id="busStop" required>
             <option value="">Loading stops...</option>
           </select>
 
-          <div id="sampleCounter" style="display: none">
-            Samples Collected: <span id="sampleCount">0</span>
-          </div>
-
           <button type="submit">Start Face Collection</button>
         </form>
-
-        <video id="video" width="640" height="480" autoplay></video>
       </div>
     </div>
-    <div id="instructionOverlay">
-      <div
-        id="faceAnimation"
-        style="background-image: url('/static/media/face-default.png')"
-      ></div>
-      <div id="stepText">Step 1: Look straight at the camera</div>
+
+    <!-- Overlay (hidden until collection starts) -->
+    <div id="collectionOverlay">
+      <video id="video" autoplay></video>
+      <div id="instructionOverlay">
+        <div
+          id="faceAnimation"
+          style="background-image: url('/static/media/face-front.png')"
+        ></div>
+        <div id="stepText">Follow the instructions</div>
+        <div id="sampleCounter">Samples: <span id="sampleCount">0</span></div>
+      </div>
     </div>
 
     <footer>
       &copy; 2025 SSN College of Engineering. All rights reserved.
     </footer>
-    <script>
-      
-      const overlay = document.getElementById("instructionOverlay");
-      const stepText = document.getElementById("stepText");
-      const faceAnimation = document.getElementById("faceAnimation");
-
-      const instructions = [
-        "Step 1: Look straight at the camera",
-        "Step 2: Tilt your head slightly down",
-        "Step 3: Turn your face to the left",
-        "Step 4: Turn your face to the right",
-        "Step 5: Cover the left side of your face",
-        "Step 6: Cover the right side of your face",
-        "Step 7: Cover your mouth",
-        "Step 8: Wear glasses or a mask if available",
-      ];
-
-      const animationImages = [
-        "face-front.png",
-        "face-down.png",
-        "face-left.png",
-        "face-right.png",
-        "face-half-left.png",
-        "face-half-right.png",
-        "face-mouth.png",
-        "face-mask.png",
-      ];
-
-      function showInstructions() {
-        overlay.style.display = "flex";
-        let currentStep = 0;
-
-        function nextStep() {
-          if (currentStep < instructions.length) {
-            stepText.textContent = instructions[currentStep];
-            faceAnimation.style.backgroundImage = `url('/static/media/${animationImages[currentStep]}')`;
-            currentStep++;
-            setTimeout(nextStep, 2500); // Wait 2.5s before next step
-          } else {
-            overlay.style.display = "none";
-          }
-        }
-
-        nextStep();
-      }
-
-      document
-        .getElementById("infoForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-
-        
-          navigator.mediaDevices
-            .getUserMedia({ video: true })
-            .then((stream) => {
-              //  show instructions
-              showInstructions();
-
-            })
-            .catch((err) => {
-              alert("Camera access is required to proceed.");
-              console.error("Camera error:", err);
-            });
-        });
-    </script>
-
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-
     <script src="{{ url_for('static', filename='index.js') }}"></script>
-  </body>
-</html>
+    <script>
+      // Role comes from Flask
+      const userRole = "{{ role }}";
 
+      window.onload = () => {
+        const roleSelect = document.getElementById("role");
+
+        if (userRole.includes("Student")) {
+          if (userRole == "DayScholar_Student") {
+            roleSelect.value = "DayScholar_Student";
+            roleSelect.disabled = true;
+          } else {
+            roleSelect.value = "Hosteller_Student";
+            roleSelect.disabled = true;
+            document.getElementById("busNo").style.display = "none";
+            document.getElementById("busStop").style.display = "none";
+            document.getElementById("busNo").removeAttribute("required");
+            document.getElementById("busStop").removeAttribute("required");
+          }
+        } else if (userRole.includes("Teacher")) {
+          roleSelect.value = "TEACHER";
+          roleSelect.disabled = true;
+        }
+      };
     </script>
   </body>
 </html>
- -->
-

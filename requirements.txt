@@ -1,12 +1,24 @@
-flask
-flask-cors
-firebase-admin
-opencv-python
-insightface
-numpy
-onnxruntime
-scikit-image
-scipy
-gunicorn
-pyrebase4
-setuptools
+# flask
+# flask-cors
+# firebase-admin
+# opencv-python
+# insightface
+# numpy
+# onnxruntime
+# scikit-image
+# scipy
+# gunicorn
+# pyrebase4
+# setuptools
+flask==2.3.3
+flask-cors==3.0.10
+firebase-admin==6.2.0
+opencv-python==4.8.0.76
+insightface==0.7.3
+numpy==1.24.4
+onnxruntime==1.16.3
+scikit-image==0.20.0
+scipy==1.10.1
+gunicorn==21.2.0
+pyrebase4==4.7.1
+setuptools==68.2.2

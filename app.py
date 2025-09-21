@@ -1,8 +1,8 @@
 
 
-from flask import Flask, request, jsonify, render_template, redirect, url_for, abort
+from flask import Flask, request, session, jsonify, render_template, redirect, url_for, abort
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, auth as admin_auth
 import numpy as np
 from PIL import Image
 from io import BytesIO
@@ -20,10 +20,11 @@ CORS(app)
 
 # Set secret key securely
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", secrets.token_hex(32))
-cred = credentials.Certificate('/etc/secrets/serviceAccountKey.json')
+cred = credentials.Certificate('./etc/secrets/serviceAccountKey.json')
 firebase_admin.initialize_app(cred)
+# pb_auth = firebase.auth()
 store = firestore.client()
-COLLECTION_NAME = "academy:register"
+COLLECTION_NAME = 'face_data'  # "academy:register"
 
 faceapp = FaceAnalysis(name='buffalo_sc', root='insightface_model', providers=[
                        'CPUExecutionProvider'])
@@ -39,7 +40,7 @@ db = firebase.database()
 
 # Shared session state
 received_embeddings = []
-sample_limit = 50
+sample_limit = 80
 current_name_role = None
 
 
@@ -80,14 +81,89 @@ def maintenance():
     ''', 503
 
 
-@app.route('/')
-def home():
-    return redirect(url_for('index_page'))
+# @app.route('/')
+# def home():
+#     return redirect(url_for('index_page'))
 
 
-@app.route('/index')
-def index_page():
-    return render_template("index.html")
+# @app.route('/index')
+# def index_page():
+#     return render_template("index.html")
+@app.route("/")
+def index():
+    return render_template("login.html")
+
+
+# @app.route("/login", methods=["POST"])
+# def login():
+#     email = request.form["email"]
+#     password = request.form["password"]
+#     print(11)
+#     try:
+#         user = auth.sign_in_with_email_and_password(email, password)
+#         print(1)
+#         print(user)
+#         id_token = user["idToken"]
+#         # print(id_token)
+
+#         decoded = admin_auth.verify_id_token(id_token)
+#         role = decoded.get("role", None)
+#         print(role)
+
+#         session["email"] = email
+#         session["role"] = role
+
+#         return redirect(url_for("form_page"))
+
+#     except Exception as e:
+#         return f"Login failed: {e}"
+
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.form["email"]
+    password = request.form["password"]
+
+    try:
+        # Firebase Auth login
+        user = auth.sign_in_with_email_and_password(email, password)
+        id_token = user["idToken"]
+
+        decoded = admin_auth.verify_id_token(id_token)
+        role = decoded.get("role", None)
+
+        # Step 3: Check Firestore face_data/facial_features
+        facial_doc_ref = store.collection("face_data").document("facial_features")
+        facial_doc = facial_doc_ref.get()
+
+        if facial_doc.exists:
+            facial_data = facial_doc.to_dict()
+
+            for key in facial_data.keys():  # e.g. "test2210999@ssn.edu.in@Hosteller_Student"
+                key_parts = key.split("@")
+                if len(key_parts) >= 2:
+                    # take the email part only
+                    key_email = key_parts[0] + "@" + key_parts[1]
+                    if key_email.lower() == email.lower():
+                        return "Login blocked: Face already registered for this user."
+
+        # If not found → proceed
+        session["email"] = email
+        session["role"] = role
+        return redirect(url_for("form_page"))
+
+    except Exception as e:
+        return f"Login failed: {e}"
+
+
+@app.route("/form")
+def form_page():
+    if "role" not in session:
+        return redirect(url_for("index"))
+
+    role = session["role"]
+
+    # Pass role to template, hide irrelevant fields
+    return render_template("index.html", role=role)
 
 
 @app.route('/start-face-collection', methods=['POST'])
@@ -106,7 +182,8 @@ def start_face_collection():
     ssn_email_id = data.get('email')
     dob = data.get('dob')
     stop = data.get('busStop')
-    name_role = f"{name}@{role}"
+    # if wanted change this to name rather than email
+    name_role = f"{ssn_email_id}@{role}"
     current_name_role = name_role
     received_embeddings = []
 
@@ -119,10 +196,12 @@ def start_face_collection():
     print(f"  - Name Role: {name_role}")
 
     # Validate required fields
-    if not all([name, role, ssn_email_id, dob, stop]):
+    if (role != 'Hosteller_Student' and not all([name, role, ssn_email_id, dob, stop])):
         print("DEBUG: Missing required fields")
         return jsonify({'error': 'Missing required fields'}), 400
-
+    elif (role == 'Hosteller_Student' and not all([name, role, ssn_email_id, dob,])):
+        print("DEBUG: Missing required fields")
+        return jsonify({'error': 'Missing required fields'}), 400
     print("DEBUG: All required fields present")
 
     # Convert date format from YYYY-MM-DD to DD-MM-YYYY for Firebase Auth
@@ -135,21 +214,21 @@ def start_face_collection():
         return jsonify({'error': 'Invalid date format'}), 400
 
     # Create user in Firebase Auth
-    try:
-        print(
-            f"DEBUG: Attempting to create Firebase Auth user with email: '{ssn_email_id}' and password: '{dob_converted}'")
-        user = auth.create_user_with_email_and_password(
-            ssn_email_id, dob_converted)
-        print(f"DEBUG: User created successfully: {user}")
-    except Exception as e:
-        error_str = str(e)
-        print(f"DEBUG: Error creating user: {error_str}")
-        # If user already exists, Firebase returns an error; inform the user and do not proceed
-        if 'EMAIL_EXISTS' in error_str:
-            print(f"DEBUG: User already exists, aborting registration.")
-            return jsonify({'error': 'User already exists with this email.'}), 409
-        else:
-            return jsonify({'error': 'User creation failed', 'details': error_str}), 400
+    # try:
+    #     print(
+    #         f"DEBUG: Attempting to create Firebase Auth user with email: '{ssn_email_id}' and password: '{dob_converted}'")
+    #     user = auth.create_user_with_email_and_password(
+    #         ssn_email_id, dob_converted)
+    #     print(f"DEBUG: User created successfully: {user}")
+    # except Exception as e:
+    #     error_str = str(e)
+    #     print(f"DEBUG: Error creating user: {error_str}")
+    #     # If user already exists, Firebase returns an error; inform the user and do not proceed
+    #     if 'EMAIL_EXISTS' in error_str:
+    #         print(f"DEBUG: User already exists, aborting registration.")
+    #         return jsonify({'error': 'User already exists with this email.'}), 409
+    #     else:
+    #         return jsonify({'error': 'User creation failed', 'details': error_str}), 400
 
     try:
         print("DEBUG: Starting Firestore operations")
@@ -218,7 +297,7 @@ def upload_frame():
 
 @app.route('/firebase-config')
 def firebase_config():
-    with open('/etc/secrets/google-services.json') as f:
+    with open('./etc/secrets/google-services.json') as f:
         config = json.load(f)
     # Optionally, remove sensitive fields if needed
     return jsonify(config)
@@ -238,4 +317,3 @@ def debug_site_status():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
