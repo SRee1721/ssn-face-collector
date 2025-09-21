@@ -20,7 +20,7 @@ CORS(app)
 
 # Set secret key securely
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", secrets.token_hex(32))
-cred = credentials.Certificate('./etc/secrets/serviceAccountKey.json')
+cred = credentials.Certificate('/etc/secrets/serviceAccountKey.json')
 firebase_admin.initialize_app(cred)
 # pb_auth = firebase.auth()
 store = firestore.client()
@@ -31,7 +31,7 @@ faceapp = FaceAnalysis(name='buffalo_sc', root='insightface_model', providers=[
 faceapp.prepare(ctx_id=0, det_size=(640, 640), det_thresh=0.5)
 
 # Firebase auth initialization
-with open('google-services.json') as f:
+with open('/etc/secrets/google-services.json') as f:
     firebase_config = json.load(f)
 
 firebase = pyrebase.initialize_app(firebase_config)
@@ -297,7 +297,7 @@ def upload_frame():
 
 @app.route('/firebase-config')
 def firebase_config():
-    with open('./etc/secrets/google-services.json') as f:
+    with open('/etc/secrets/google-services.json') as f:
         config = json.load(f)
     # Optionally, remove sensitive fields if needed
     return jsonify(config)
@@ -317,3 +317,4 @@ def debug_site_status():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
