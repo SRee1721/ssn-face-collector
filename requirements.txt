@@ -1,5 +1,4 @@
-requires = ["setuptools>=65", "wheel"]
-build-backend = "setuptools.build_meta"
+setuptools>=65
 flask==2.3.3
 flask-cors==3.0.10
 firebase-admin==6.2.0
