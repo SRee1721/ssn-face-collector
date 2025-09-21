@@ -144,7 +144,10 @@ def login():
                     # take the email part only
                     key_email = key_parts[0] + "@" + key_parts[1]
                     if key_email.lower() == email.lower():
-                        return "Login blocked: Face already registered for this user."
+                        return return """<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;">
+<h1 style="color:#d32f2f;font-size:2.5rem;">Login blocked</h1>
+<p style="font-size:1.2rem;"> Face already registered for this user.</p>
+</div>"""
 
         # If not found → proceed
         session["email"] = email
@@ -317,4 +320,5 @@ def debug_site_status():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
