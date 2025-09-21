@@ -9,7 +9,7 @@
 # scipy
 # gunicorn
 # pyrebase4
-# setuptools
+setuptools
 flask==2.3.3
 flask-cors==3.0.10
 firebase-admin==6.2.0
